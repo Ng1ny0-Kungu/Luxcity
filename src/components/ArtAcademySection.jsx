@@ -1,5 +1,6 @@
 import React, { useEffect } from "react";
 import { motion, useAnimation } from "framer-motion";
+import { useInView } from "react-intersection-observer"; // 👈 Added
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
@@ -11,14 +12,20 @@ import art4 from "../assets/Artacademy4.jpg";
 
 const ArtAcademySection = () => {
   const controls = useAnimation();
+  const { ref, inView } = useInView({
+    triggerOnce: true,
+    rootMargin: "100px", // triggers early for smooth load
+  });
 
   useEffect(() => {
-    controls.start({
-      opacity: 1,
-      y: 0,
-      transition: { duration: 1.2, ease: "easeOut" },
-    });
-  }, [controls]);
+    if (inView) {
+      controls.start({
+        opacity: 1,
+        y: 0,
+        transition: { duration: 1.2, ease: "easeOut" },
+      });
+    }
+  }, [controls, inView]);
 
   const settings = {
     dots: true,
@@ -31,8 +38,13 @@ const ArtAcademySection = () => {
     pauseOnHover: true,
   };
 
+  const artImages = [art1, art2, art3, art4];
+
   return (
-    <section className="relative py-20 px-6 md:px-20 bg-transparent text-white overflow-hidden">
+    <section
+      ref={ref}
+      className="relative py-20 px-6 md:px-20 bg-transparent text-white overflow-hidden"
+    >
       <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
         {/* Text Box */}
         <motion.div
@@ -61,24 +73,29 @@ const ArtAcademySection = () => {
           className="relative rounded-2xl overflow-hidden shadow-2xl border border-white/10"
           initial={{ opacity: 0, y: 40 }}
           animate={{
-            opacity: 1,
-            y: 0,
+            opacity: inView ? 1 : 0,
+            y: inView ? 0 : 40,
             transition: { duration: 1.4, delay: 0.4, ease: "easeOut" },
           }}
         >
-          <Slider {...settings}>
-            {[art1, art2, art3, art4].map((img, i) => (
-              <div key={i}>
-                <img
-                  src={img}
-                  alt={`Art Academy ${i + 1}`}
-                  className="w-full h-[420px] object-cover rounded-2xl"
-                />
-              </div>
-            ))}
-          </Slider>
+          {inView ? (
+            <Slider {...settings}>
+              {artImages.map((img, i) => (
+                <div key={i}>
+                  <img
+                    src={img}
+                    loading="lazy"
+                    alt={`Art Academy ${i + 1}`}
+                    className="w-full h-[420px] object-cover rounded-2xl transition-all duration-700"
+                  />
+                </div>
+              ))}
+            </Slider>
+          ) : (
+            
+            <div className="w-full h-[420px] bg-gray-800 animate-pulse rounded-2xl" />
+          )}
 
-          {/* ✅ Enhanced Slick styling */}
           <style>
             {`
               /* Arrows styling */
@@ -89,12 +106,8 @@ const ArtAcademySection = () => {
                 top: 50%;
                 transform: translateY(-50%);
               }
-              .slick-prev {
-                left: 15px; /* Inside the image box */
-              }
-              .slick-next {
-                right: 15px; /* Inside the image box */
-              }
+              .slick-prev { left: 15px; }
+              .slick-next { right: 15px; }
               .slick-prev:before, .slick-next:before {
                 font-size: 36px;
                 opacity: 0.8;
@@ -108,9 +121,7 @@ const ArtAcademySection = () => {
               }
 
               /* Dots styling */
-              .slick-dots {
-                bottom: 10px;
-              }
+              .slick-dots { bottom: 10px; }
               .slick-dots li button:before {
                 font-size: 12px;
                 color: #ffffff;

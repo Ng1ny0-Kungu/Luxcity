@@ -1,9 +1,9 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { motion, useAnimation } from "framer-motion";
+import { useInView } from "react-intersection-observer";
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-
 
 import birthdayparty from "../assets/birthdayparty.webp";
 import birthdayparty1 from "../assets/birthdayparty1.webp";
@@ -15,14 +15,21 @@ import others from "../assets/others.jpg";
 
 const PrivatePartiesSection = () => {
   const controls = useAnimation();
+  const { ref, inView } = useInView({ triggerOnce: true, rootMargin: "100px" });
+  const [imagesLoaded, setImagesLoaded] = useState(false);
 
   useEffect(() => {
-    controls.start({
-      opacity: 1,
-      y: 0,
-      transition: { duration: 1.2, ease: "easeOut" },
-    });
-  }, [controls]);
+    if (inView) {
+      controls.start({
+        opacity: 1,
+        y: 0,
+        transition: { duration: 1.2, ease: "easeOut" },
+      });
+
+      const timer = setTimeout(() => setImagesLoaded(true), 300);
+      return () => clearTimeout(timer);
+    }
+  }, [controls, inView]);
 
   const settings = {
     dots: true,
@@ -35,10 +42,23 @@ const PrivatePartiesSection = () => {
     pauseOnHover: true,
   };
 
+  const images = [
+    birthdayparty,
+    birthdayparty1,
+    anniversaryparty,
+    graduationparty,
+    graduationparty1,
+    graduationparty2,
+    others,
+  ];
+
   return (
-    <section className="relative py-20 px-6 md:px-20 bg-transparent text-white overflow-hidden">
+    <section
+      ref={ref}
+      className="relative py-20 px-6 md:px-20 bg-transparent text-white overflow-hidden"
+    >
       <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
-        {}
+        {/* 🎉 Text Box */}
         <motion.div
           className="bg-white/5 backdrop-blur-md p-8 rounded-2xl shadow-lg border border-white/10"
           initial={{ opacity: 0, y: 40 }}
@@ -49,23 +69,23 @@ const PrivatePartiesSection = () => {
           </h2>
           <p className="text-lg leading-relaxed text-gray-200">
             Life’s best moments deserve a beautiful stage — and that’s exactly
-            what we create at <strong>Luxcity</strong>.{" "}
+            what we create at <strong>Luxcity</strong>.
             <br />
             <br />
             From 🎂 <strong>birthday parties</strong> and 💍{" "}
             <strong>anniversary celebrations</strong> to 🎓{" "}
             <strong>graduations</strong> and 💐 <strong>dowry events</strong>,
             our team crafts each experience with warmth, creativity, and
-            elegance.{" "}
+            elegance.
             <br />
             <br />
             We handle every detail — from vibrant décor and mood lighting to
             catering, music, and seating setups — so you can focus on enjoying
-            the celebration with your loved ones.{" "}
+            the celebration with your loved ones.
             <br />
             <br />
             Whether it’s a cozy family gathering or a grand outdoor event, we’ll
-            make sure it’s one for the memories.{" "}
+            make sure it’s one for the memories.
             <br />
             <br />
             <span className="italic text-gray-300">
@@ -74,31 +94,34 @@ const PrivatePartiesSection = () => {
           </p>
         </motion.div>
 
-        {}
+        {/* 📸 Image Carousel */}
         <motion.div
           className="relative rounded-2xl overflow-hidden shadow-2xl border border-white/10"
           initial={{ opacity: 0, y: 40 }}
           animate={{
-            opacity: 1,
-            y: 0,
+            opacity: inView ? 1 : 0,
+            y: inView ? 0 : 40,
             transition: { duration: 1.4, delay: 0.4, ease: "easeOut" },
           }}
         >
-          <Slider {...settings}>
-            {[birthdayparty, birthdayparty1, anniversaryparty, graduationparty, graduationparty1, graduationparty2, others].map(
-              (img, i) => (
+          {imagesLoaded ? (
+            <Slider {...settings}>
+              {images.map((img, i) => (
                 <div key={i}>
                   <img
                     src={img}
+                    loading="lazy"
                     alt={`Private Party ${i + 1}`}
                     className="w-full h-[420px] object-cover rounded-2xl"
                   />
                 </div>
-              )
-            )}
-          </Slider>
+              ))}
+            </Slider>
+          ) : (
+            <div className="w-full h-[420px] bg-gray-800 animate-pulse rounded-2xl" />
+          )}
 
-          {}
+          {/* Enhanced Slick Styling */}
           <style>
             {`
               .slick-prev, .slick-next {
@@ -108,12 +131,8 @@ const PrivatePartiesSection = () => {
                 top: 50%;
                 transform: translateY(-50%);
               }
-              .slick-prev {
-                left: 15px;
-              }
-              .slick-next {
-                right: 15px;
-              }
+              .slick-prev { left: 15px; }
+              .slick-next { right: 15px; }
               .slick-prev:before, .slick-next:before {
                 font-size: 36px;
                 opacity: 0.8;

@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
+import { useInView } from "react-intersection-observer";
 
 // Event images
 import birthdayparty from "../assets/birthdayparty.jpg";
@@ -10,6 +11,10 @@ import weddingreception from "../assets/weddingreception.jpg";
 function EventSection() {
   const images = [birthdayparty, techconvention, weddingreception];
   const [currentIndex, setCurrentIndex] = useState(0);
+  const { ref, inView } = useInView({
+    triggerOnce: true,
+    rootMargin: "50px",
+  });
 
   const nextImage = () => {
     setCurrentIndex((prev) => (prev + 1) % images.length);
@@ -45,17 +50,23 @@ function EventSection() {
 
         {/* Right: Image Slider */}
         <motion.div
+          ref={ref}
           initial={{ x: 100, opacity: 0 }}
           whileInView={{ x: 0, opacity: 1 }}
           transition={{ duration: 0.8 }}
           viewport={{ once: true }}
           className="relative w-full h-72 md:h-96 rounded-xl overflow-hidden shadow-lg"
         >
-          <img
-            src={images[currentIndex]}
-            alt="Luxcity Event"
-            className="w-full h-full object-cover transition-all duration-500"
-          />
+          {inView ? (
+            <img
+              src={images[currentIndex]}
+              alt="Luxcity Event"
+              loading="lazy"
+              className="w-full h-full object-cover transition-all duration-500"
+            />
+          ) : (
+            <div className="w-full h-full bg-gray-800 animate-pulse rounded-xl" />
+          )}
 
           {/* Buttons */}
           <button

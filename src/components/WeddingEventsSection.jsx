@@ -1,5 +1,6 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { motion, useAnimation } from "framer-motion";
+import { useInView } from "react-intersection-observer";
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
@@ -15,14 +16,20 @@ import weddingfood2 from "../assets/weddingfood2.jpg";
 
 const WeddingEventsSection = () => {
   const controls = useAnimation();
+  const { ref, inView } = useInView({ triggerOnce: true, rootMargin: "120px" });
+  const [imagesLoaded, setImagesLoaded] = useState(false);
 
   useEffect(() => {
-    controls.start({
-      opacity: 1,
-      y: 0,
-      transition: { duration: 1.2, ease: "easeOut" },
-    });
-  }, [controls]);
+    if (inView) {
+      controls.start({
+        opacity: 1,
+        y: 0,
+        transition: { duration: 1.2, ease: "easeOut" },
+      });
+      const timer = setTimeout(() => setImagesLoaded(true), 300);
+      return () => clearTimeout(timer);
+    }
+  }, [controls, inView]);
 
   const settings = {
     dots: true,
@@ -35,10 +42,24 @@ const WeddingEventsSection = () => {
     pauseOnHover: true,
   };
 
+  const images = [
+    weddingreception1,
+    weddingreception2,
+    Gardenwedding,
+    weddingshoot,
+    weddingshoot1,
+    weddingfood,
+    weddingfood1,
+    weddingfood2,
+  ];
+
   return (
-    <section className="relative py-20 px-6 md:px-20 bg-transparent text-white overflow-hidden">
+    <section
+      ref={ref}
+      className="relative py-20 px-6 md:px-20 bg-transparent text-white overflow-hidden"
+    >
       <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
-        {}
+        {/* 💍 Text Box */}
         <motion.div
           className="bg-white/5 backdrop-blur-md p-8 rounded-2xl shadow-lg border border-white/10"
           initial={{ opacity: 0, y: 40 }}
@@ -51,25 +72,25 @@ const WeddingEventsSection = () => {
             At <strong>Luxcity</strong>, we believe your wedding day should be as
             breathtaking as your love story. From the first “yes” to the final
             dance, our team brings magic, precision, and passion into every
-            detail.{" "}
+            detail.
             <br />
             <br />
             Whether you dream of a lush 🌿 <strong>garden ceremony</strong> or a
             glamorous 💎 <strong>indoor reception</strong>, we help you find and
             style the perfect venue. We take care of everything — elegant seating,
             themed décor, romantic lighting, floral designs, and sound setups that
-            set the perfect mood.{" "}
+            set the perfect mood.
             <br />
             <br />
-            After the “I do’s,” we bring the party alive with
-            enchanting <strong>after-parties</strong>, full-course dining,
-            signature 🍸 <strong>drinks</strong>, and your desired
-            <strong> recipes</strong> prepared by professional chefs.{" "}
+            After the “I do’s,” we bring the party alive with enchanting{" "}
+            <strong>after-parties</strong>, full-course dining, signature 🍸{" "}
+            <strong>drinks</strong>, and your desired <strong>recipes</strong>{" "}
+            prepared by professional chefs.
             <br />
             <br />
             And because memories are forever, we also capture your special day
-            with expert <strong>wedding photography</strong> and
-            <strong> videography</strong> — every smile, every dance, every kiss.{" "}
+            with expert <strong>wedding photography</strong> and{" "}
+            <strong>videography</strong> — every smile, every dance, every kiss.
             <br />
             <br />
             <span className="italic text-gray-300">
@@ -78,7 +99,7 @@ const WeddingEventsSection = () => {
           </p>
         </motion.div>
 
-        {}
+        {/* 📸 Image Carousel */}
         <motion.div
           className="relative rounded-2xl overflow-hidden shadow-2xl border border-white/10"
           style={{
@@ -87,33 +108,29 @@ const WeddingEventsSection = () => {
           }}
           initial={{ opacity: 0, y: 40 }}
           animate={{
-            opacity: 1,
-            y: 0,
-            transition: { duration: 1.4, delay: 0.4, ease: 'easeOut' },
+            opacity: inView ? 1 : 0,
+            y: inView ? 0 : 40,
+            transition: { duration: 1.4, delay: 0.4, ease: "easeOut" },
           }}
         >
-          <Slider {...settings}>
-            {[
-              weddingreception1,
-              weddingreception2,
-              Gardenwedding,
-              weddingshoot,
-              weddingshoot1,
-              weddingfood,
-              weddingfood1,
-              weddingfood2,
-            ].map((img, i) => (
-              <div key={i}>
-                <img
-                  src={img}
-                  alt={`Wedding Event ${i + 1}`}
-                  className="w-full h-[420px] object-cover rounded-2xl"
-                />
-              </div>
-            ))}
-          </Slider>
+          {imagesLoaded ? (
+            <Slider {...settings}>
+              {images.map((img, i) => (
+                <div key={i}>
+                  <img
+                    src={img}
+                    loading="lazy"
+                    alt={`Wedding Event ${i + 1}`}
+                    className="w-full h-[420px] object-cover rounded-2xl"
+                  />
+                </div>
+              ))}
+            </Slider>
+          ) : (
+            <div className="w-full h-[420px] bg-gray-800 animate-pulse rounded-2xl" />
+          )}
 
-          {/* 🎨 Slick Customization */}
+          {/* 💫 Slick Styling */}
           <style>
             {`
               .slick-prev, .slick-next {

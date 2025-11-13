@@ -12,7 +12,7 @@ const TalentBooking = () => {
   <ParticlesBackground />
 
   <div className="relative z-10 flex flex-col items-center justify-center min-h-screen text-center">
-    <h1 className="text-4xl md:text-6xl font-bold mb-6">Talent Academy</h1>
+    <h1 className="text-4xl md:text-6xl font-bold mb-6 text-[#E7B10A]">Talent Academy</h1>
     <p className="text-lg md:text-xl max-w-2xl">
       Unlock creativity and performance through professional training in art, dance, and music at Luxcity Talent Academy.
     </p>

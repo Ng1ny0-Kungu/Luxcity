@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { motion, useAnimation } from "framer-motion";
+import { useInView } from "react-intersection-observer"; // 👈 Added
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
@@ -10,48 +11,54 @@ import musicVideo from "../assets/Music.mp4";
 
 const MusicAcademySection = () => {
   const controls = useAnimation();
+  const { ref, inView } = useInView({
+    triggerOnce: true,
+    rootMargin: "100px",
+  });
+
   const videoRef = useRef(null);
   const [isMuted, setIsMuted] = useState(true);
   const [volume, setVolume] = useState(0.5);
   const [currentSlide, setCurrentSlide] = useState(0);
+  const [videoLoaded, setVideoLoaded] = useState(false); // 👈 Lazy load video
 
+  // Animate section when in view
   useEffect(() => {
-    controls.start({
-      opacity: 1,
-      y: 0,
-      transition: { duration: 1.2, ease: "easeOut" },
-    });
-  }, [controls]);
+    if (inView) {
+      controls.start({
+        opacity: 1,
+        y: 0,
+        transition: { duration: 1.2, ease: "easeOut" },
+      });
+
+      // Load video only when visible
+      const timer = setTimeout(() => setVideoLoaded(true), 500);
+      return () => clearTimeout(timer);
+    }
+  }, [controls, inView]);
 
   const handleVolumeChange = (e) => {
     const vol = parseFloat(e.target.value);
     setVolume(vol);
-    if (videoRef.current) {
-      videoRef.current.volume = vol;
-    }
+    if (videoRef.current) videoRef.current.volume = vol;
   };
 
   const handleMuteToggle = () => {
     setIsMuted((prev) => !prev);
-    if (videoRef.current) {
-      videoRef.current.muted = !videoRef.current.muted;
-    }
+    if (videoRef.current) videoRef.current.muted = !videoRef.current.muted;
   };
 
   const settings = {
     dots: true,
     infinite: true,
-    autoplay: false, // ❌ viewer controls navigation manually
+    autoplay: false,
     slidesToShow: 1,
     slidesToScroll: 1,
     arrows: true,
     pauseOnHover: true,
     fade: true,
-    beforeChange: (oldIndex, newIndex) => {
-      setCurrentSlide(newIndex);
-      if (videoRef.current) {
-        videoRef.current.pause();
-      }
+    beforeChange: () => {
+      if (videoRef.current) videoRef.current.pause();
     },
     afterChange: (index) => {
       if (index === 2 && videoRef.current) {
@@ -60,8 +67,13 @@ const MusicAcademySection = () => {
     },
   };
 
+  const images = [music1, music2];
+
   return (
-    <section className="relative py-20 px-6 md:px-20 bg-transparent text-white overflow-hidden">
+    <section
+      ref={ref}
+      className="relative py-20 px-6 md:px-20 bg-transparent text-white overflow-hidden"
+    >
       <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
         {/* Text Box */}
         <motion.div
@@ -84,71 +96,45 @@ const MusicAcademySection = () => {
           </p>
         </motion.div>
 
-        {/* Image & Video Carousel */}
+        {/* Media Carousel */}
         <motion.div
           className="relative rounded-2xl overflow-hidden shadow-2xl border border-white/10"
           initial={{ opacity: 0, y: 40 }}
           animate={{
-            opacity: 1,
-            y: 0,
+            opacity: inView ? 1 : 0,
+            y: inView ? 0 : 40,
             transition: { duration: 1.4, delay: 0.4, ease: "easeOut" },
           }}
         >
-          <Slider {...settings}>
-            {[music1, music2].map((img, i) => (
-              <div key={i}>
-                <img
-                  src={img}
-                  alt={`Music Academy ${i + 1}`}
+          {inView ? (
+            <Slider {...settings}>
+              {images.map((img, i) => (
+                <div key={i}>
+                  <img
+                    src={img}
+                    loading="lazy"
+                    alt={`Music Academy ${i + 1}`}
+                    className="w-full h-[420px] object-cover rounded-2xl"
+                  />
+                </div>
+              ))}
+              <div>
+                <video
+                  ref={videoRef}
+                  src={musicVideo}
                   className="w-full h-[420px] object-cover rounded-2xl"
-                />
+                    muted
+                    controls
+                    playsInline
+                  />
               </div>
-            ))}
-            {/* Video Slide */}
-            <div className="relative">
-              <video
-                ref={videoRef}
-                src={musicVideo}
-                className="w-full h-[420px] object-cover rounded-2xl"
-                muted={isMuted}
-                volume={volume}
-                controls={false}
-                playsInline
-              />
-              {/* Video Controls */}
-              <div className="absolute bottom-4 left-4 flex items-center bg-black/50 backdrop-blur-md px-4 py-2 rounded-lg space-x-4">
-                <button
-                  onClick={handleMuteToggle}
-                  className="text-white hover:text-[#0492C2] transition"
-                >
-                  {isMuted ? "🔇" : "🔊"}
-                </button>
-                <input
-                  type="range"
-                  min="0"
-                  max="1"
-                  step="0.05"
-                  value={volume}
-                  onChange={handleVolumeChange}
-                  className="w-24 accent-[#0492C2] cursor-pointer"
-                />
-                <button
-                  onClick={() => {
-                    if (videoRef.current.paused) {
-                      videoRef.current.play();
-                    } else {
-                      videoRef.current.pause();
-                    }
-                  }}
-                  className="text-white hover:text-[#0492C2] transition"
-                >
-                  ⏯️
-                </button>
-              </div>
-            </div>
-          </Slider>
+            </Slider>
+          ) : (
+            // Placeholder for carousel before it's visible
+            <div className="w-full h-[420px] bg-gray-800 animate-pulse rounded-2xl" />
+          )}
 
-          {/* Glowing Arrows + Dots */}
+          {/* Styles for arrows and dots */}
           <style>
             {`
               .slick-prev, .slick-next {

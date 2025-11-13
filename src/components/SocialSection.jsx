@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
+import { useInView } from "react-intersection-observer"; // 👈 for lazy loading
 
 import charitywalk from "../assets/charitywalk.jpg";
 import charitywalk2 from "../assets/charitywalk2.jpeg";
@@ -24,6 +25,12 @@ function SocialSection() {
   const images = [charitywalk, charitywalk2, communityfun];
   const [currentIndex, setCurrentIndex] = useState(0);
 
+  // Lazy load reference
+  const { ref, inView } = useInView({
+    triggerOnce: true,
+    rootMargin: "100px",
+  });
+
   // Auto-slide every 4 seconds
   useEffect(() => {
     const interval = setInterval(() => {
@@ -45,17 +52,24 @@ function SocialSection() {
       <div className="grid md:grid-cols-2 gap-12 items-center">
         {/* Left: Image Slideshow */}
         <motion.div
+          ref={ref}
           initial={{ x: -200, opacity: 0 }}
           whileInView={{ x: 0, opacity: 1 }}
           transition={{ duration: 1 }}
           viewport={{ once: true }}
           className="relative w-full h-80 md:h-[450px] rounded-xl overflow-hidden shadow-lg"
         >
-          <img
-            src={images[currentIndex]}
-            alt="Luxcity Social Life"
-            className="w-full h-full object-cover transition-all duration-700"
-          />
+          {inView ? (
+            <img
+              src={images[currentIndex]}
+              alt="Luxcity Social Life"
+              loading="lazy"
+              className="w-full h-full object-cover transition-all duration-700"
+            />
+          ) : (
+            // Skeleton placeholder shimmer while offscreen
+            <div className="w-full h-full bg-gray-800 animate-pulse rounded-xl" />
+          )}
 
           {/* Buttons */}
           <button

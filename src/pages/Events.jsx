@@ -11,7 +11,7 @@ const Events = () => {
     <div className="relative min-h-screen bg-[#151E3D] text-white">
       <ParticlesBackground />
       <div className="relative z-10 flex flex-col items-center justify-center min-h-screen">
-        <h1 className="text-4xl md:text-6xl font-bold mb-6">Events</h1>
+        <h1 className="text-4xl md:text-6xl font-bold mb-6 text-[#E7B10A]">Events</h1>
         <p className="text-lg md:text-xl max-w-2xl text-center">
           Explore event planning done by Luxcity Creatives
         </p>

@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import CountUp from "react-countup";
+import { useInView } from "react-intersection-observer";
+import { Link } from "react-router-dom";
 
 import bracelet from "../assets/bracelet.jpg";
 import necklace from "../assets/necklace.jpg";
 import earrings from "../assets/earrings.jpg";
-import { Link } from "react-router-dom";
 
 const textContainer = {
   hidden: { opacity: 0 },
@@ -23,6 +24,12 @@ const textItem = {
 function FashionSection() {
   const images = [bracelet, necklace, earrings];
   const [currentIndex, setCurrentIndex] = useState(0);
+
+  // Lazy load reference
+  const { ref, inView } = useInView({
+    triggerOnce: true,
+    rootMargin: "100px",
+  });
 
   // Auto-slide every 4 seconds
   useEffect(() => {
@@ -108,17 +115,23 @@ function FashionSection() {
 
         {/* Right: Image Slideshow */}
         <motion.div
+          ref={ref}
           initial={{ x: -200, opacity: 0 }}
           whileInView={{ x: 0, opacity: 1 }}
           transition={{ duration: 1 }}
           viewport={{ once: true }}
           className="relative w-full h-80 md:h-[450px] rounded-xl overflow-hidden shadow-lg"
         >
-          <img
-            src={images[currentIndex]}
-            alt="Luxcity Fashion"
-            className="w-full h-full object-cover transition-all duration-700"
-          />
+          {inView ? (
+            <img
+              src={images[currentIndex]}
+              alt="Luxcity Fashion"
+              loading="lazy"
+              className="w-full h-full object-cover transition-all duration-700"
+            />
+          ) : (
+            <div className="w-full h-full bg-gray-800 animate-pulse rounded-xl" />
+          )}
 
           {/* Buttons */}
           <button
@@ -135,13 +148,14 @@ function FashionSection() {
           </button>
         </motion.div>
       </div>
-      {/*Explore button*/}
+
+      {/* Explore button */}
       <div className="flex justify-center mt-10">
         <Link
           to="/services"
           className="px-6 py-3 rounded-lg bg-[#0492C2] text-white font-semibold hover:bg-white hover:text-[#0492C2] border border-[#0492C2] transition"
         >
-          Explore Fashion 
+          Explore Fashion
         </Link>
       </div>
     </section>

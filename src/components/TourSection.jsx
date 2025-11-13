@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
+import { useInView } from "react-intersection-observer";
 
 // Tour images
 import tour1 from "../assets/tour1.jpg";
@@ -10,6 +11,10 @@ import tour3 from "../assets/tour3.jpg";
 function TourSection() {
   const tourImages = [tour1, tour2, tour3];
   const [tourIndex, setTourIndex] = useState(0);
+  const { ref, inView } = useInView({
+    triggerOnce: true,
+    rootMargin: "50px",
+  });
 
   // Auto carousel
   useEffect(() => {
@@ -52,17 +57,24 @@ function TourSection() {
       <div className="max-w-7xl mx-auto px-6 grid md:grid-cols-2 gap-12 items-center">
         {/* Image Container */}
         <motion.div
+          ref={ref}
           className="relative rounded-2xl overflow-hidden shadow-lg"
           initial={{ y: -100, opacity: 0 }}
           whileInView={{ y: 0, opacity: 1 }}
           transition={{ duration: 1, ease: "easeOut" }}
           viewport={{ once: true }}
         >
-          <img
-            src={tourImages[tourIndex]}
-            alt="Tour"
-            className="w-full h-[400px] object-cover"
-          />
+          {inView ? (
+            <img
+              src={tourImages[tourIndex]}
+              alt="Tour"
+              loading="lazy"
+              className="w-full h-[400px] object-cover transition-all duration-500"
+            />
+          ) : (
+            <div className="w-full h-[400px] bg-gray-800 animate-pulse rounded-2xl" />
+          )}
+
           {/* Manual buttons */}
           <div className="absolute inset-0 flex items-center justify-between p-4">
             <button
@@ -124,6 +136,7 @@ function TourSection() {
           </div>
         </motion.div>
       </div>
+
       {/* Explore Tours Button */}
       <div className="flex justify-center mt-10">
         <Link

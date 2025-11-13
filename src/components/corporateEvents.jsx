@@ -1,5 +1,6 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { motion, useAnimation } from "framer-motion";
+import { useInView } from "react-intersection-observer";
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
@@ -15,14 +16,23 @@ import techconvention from "../assets/techconvention.jpg";
 
 const CorporateEventsSection = () => {
   const controls = useAnimation();
+  const { ref, inView } = useInView({ triggerOnce: true, rootMargin: "100px" });
+  const [imagesLoaded, setImagesLoaded] = useState(false);
 
+  // Animate text box
   useEffect(() => {
-    controls.start({
-      opacity: 1,
-      y: 0,
-      transition: { duration: 1.2, ease: "easeOut" },
-    });
-  }, [controls]);
+    if (inView) {
+      controls.start({
+        opacity: 1,
+        y: 0,
+        transition: { duration: 1.2, ease: "easeOut" },
+      });
+
+      // Delay carousel load slightly
+      const timer = setTimeout(() => setImagesLoaded(true), 300);
+      return () => clearTimeout(timer);
+    }
+  }, [controls, inView]);
 
   const settings = {
     dots: true,
@@ -35,10 +45,24 @@ const CorporateEventsSection = () => {
     pauseOnHover: true,
   };
 
+  const images = [
+    conference1,
+    conferencehall,
+    conferencehall1,
+    productlaunch,
+    productlaunch1,
+    productlaunch2,
+    seminar,
+    techconvention,
+  ];
+
   return (
-    <section className="relative py-20 px-6 md:px-20 bg-transparent text-white overflow-hidden">
+    <section
+      ref={ref}
+      className="relative py-20 px-6 md:px-20 bg-transparent text-white overflow-hidden"
+    >
       <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
-        {/* Text Box */}
+        {/* ✅ Left: Text Box */}
         <motion.div
           className="bg-white/5 backdrop-blur-md p-8 rounded-2xl shadow-lg border border-white/10"
           initial={{ opacity: 0, y: 40 }}
@@ -47,57 +71,59 @@ const CorporateEventsSection = () => {
           <h2 className="text-3xl md:text-5xl font-bold mb-4 text-[#0492C2]">
             Events That Inspire Excellence
           </h2>
-        <p className="text-lg leading-relaxed text-gray-200">
-            From high-level conferences to exciting product launches — we bring excellence to every corporate event.{" "}
-             <br /><br />
-              Our team ensures every detail is handled with precision:
-            <ul className="list-none space-y-2 mt-2">
-              <li>🏢 <strong>Corporate Conferences & Seminars</strong> — planned with professionalism and style.</li>
-              <li>🚀 <strong>Product Launches & Tech Conventions</strong> — designed to impress and inspire.</li>
-              <li>🎨 <strong>Elegant Décor & Hall Styling</strong> — modern furniture, ambient lighting, and artistic flooring.</li>
-              <li>🍽️ <strong>Catering & Hospitality</strong> — top-tier dining for every guest and occasion.</li>
-              <li>🎧 <strong>Audiovisual Setup</strong> — crystal-clear sound, visuals, and live coordination.</li>
-            </ul>
+          <p className="text-lg leading-relaxed text-gray-200">
+            From high-level conferences to exciting product launches — we bring excellence
+            to every corporate event.
             <br />
-             Whether it’s a start-up showcase or a multinational summit — we make every moment shine.{" "}
-            <br /><br />
-          <span className="italic text-gray-300">
-            Because great ideas deserve an equally great stage. 🌟
-          </span>
-        </p>
+            <br />
+            Our team ensures every detail is handled with precision:
+          </p>
 
+          <ul className="list-none space-y-2 mt-2 text-gray-300">
+            <li>🏢 <strong>Corporate Conferences & Seminars</strong> — planned with professionalism and style.</li>
+            <li>🚀 <strong>Product Launches & Tech Conventions</strong> — designed to impress and inspire.</li>
+            <li>🎨 <strong>Elegant Décor & Hall Styling</strong> — modern furniture, ambient lighting, and artistic flooring.</li>
+            <li>🍽️ <strong>Catering & Hospitality</strong> — top-tier dining for every guest and occasion.</li>
+            <li>🎧 <strong>Audiovisual Setup</strong> — crystal-clear sound, visuals, and live coordination.</li>
+          </ul>
+
+          <br />
+          <p className="text-lg leading-relaxed text-gray-200">
+            Whether it’s a start-up showcase or a multinational summit — we make every moment shine.
+            <br />
+            <br />
+            <span className="italic text-gray-300">
+              Because great ideas deserve an equally great stage. 🌟
+            </span>
+          </p>
         </motion.div>
 
-        {/* Image Carousel */}
+        {/* ✅ Right: Lazy Image Carousel */}
         <motion.div
           className="relative rounded-2xl overflow-hidden shadow-2xl border border-white/10"
           initial={{ opacity: 0, y: 40 }}
           animate={{
-            opacity: 1,
-            y: 0,
+            opacity: inView ? 1 : 0,
+            y: inView ? 0 : 40,
             transition: { duration: 1.4, delay: 0.4, ease: "easeOut" },
           }}
         >
-          <Slider {...settings}>
-            {[
-              conference1,
-              conferencehall,
-              conferencehall1,
-              productlaunch,
-              productlaunch1,
-              productlaunch2,
-              seminar,
-              techconvention,
-            ].map((img, i) => (
-              <div key={i}>
-                <img
-                  src={img}
-                  alt={`Corporate Event ${i + 1}`}
-                  className="w-full h-[420px] object-cover rounded-2xl"
-                />
-              </div>
-            ))}
-          </Slider>
+          {imagesLoaded ? (
+            <Slider {...settings}>
+              {images.map((img, i) => (
+                <div key={i}>
+                  <img
+                    src={img}
+                    loading="lazy"
+                    alt={`Corporate Event ${i + 1}`}
+                    className="w-full h-[420px] object-cover rounded-2xl"
+                  />
+                </div>
+              ))}
+            </Slider>
+          ) : (
+            <div className="w-full h-[420px] bg-gray-800 animate-pulse rounded-2xl" />
+          )}
 
           {/* Enhanced Slick Styling */}
           <style>
@@ -109,12 +135,8 @@ const CorporateEventsSection = () => {
                 top: 50%;
                 transform: translateY(-50%);
               }
-              .slick-prev {
-                left: 15px;
-              }
-              .slick-next {
-                right: 15px;
-              }
+              .slick-prev { left: 15px; }
+              .slick-next { right: 15px; }
               .slick-prev:before, .slick-next:before {
                 font-size: 36px;
                 opacity: 0.8;
@@ -126,7 +148,6 @@ const CorporateEventsSection = () => {
                 opacity: 1;
                 text-shadow: 0 0 12px rgba(4, 146, 194, 0.6);
               }
-
               .slick-dots {
                 bottom: 10px;
               }
