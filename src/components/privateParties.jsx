@@ -15,7 +15,13 @@ import others from "../assets/others.jpg";
 
 const PrivatePartiesSection = () => {
   const controls = useAnimation();
-  const { ref, inView } = useInView({ triggerOnce: true, rootMargin: "100px" });
+
+  // Lazy load trigger
+  const { ref, inView } = useInView({
+    triggerOnce: true,
+    rootMargin: "120px",
+  });
+
   const [imagesLoaded, setImagesLoaded] = useState(false);
 
   useEffect(() => {
@@ -26,10 +32,10 @@ const PrivatePartiesSection = () => {
         transition: { duration: 1.2, ease: "easeOut" },
       });
 
-      const timer = setTimeout(() => setImagesLoaded(true), 300);
-      return () => clearTimeout(timer);
+      const t = setTimeout(() => setImagesLoaded(true), 300);
+      return () => clearTimeout(t);
     }
-  }, [controls, inView]);
+  }, [inView, controls]);
 
   const settings = {
     dots: true,
@@ -58,7 +64,8 @@ const PrivatePartiesSection = () => {
       className="relative py-20 px-6 md:px-20 bg-transparent text-white overflow-hidden"
     >
       <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
-        {/* 🎉 Text Box */}
+        
+        {/* TEXT */}
         <motion.div
           className="bg-white/5 backdrop-blur-md p-8 rounded-2xl shadow-lg border border-white/10"
           initial={{ opacity: 0, y: 40 }}
@@ -67,34 +74,31 @@ const PrivatePartiesSection = () => {
           <h2 className="text-3xl md:text-5xl font-bold mb-4 text-[#E7B10A]">
             Private Parties That Spark Joy ✨
           </h2>
+
           <p className="text-lg leading-relaxed text-gray-200">
             Life’s best moments deserve a beautiful stage — and that’s exactly
             what we create at <strong>Luxcity</strong>.
-            <br />
-            <br />
+            <br /><br />
             From 🎂 <strong>birthday parties</strong> and 💍{" "}
             <strong>anniversary celebrations</strong> to 🎓{" "}
             <strong>graduations</strong> and 💐 <strong>dowry events</strong>,
             our team crafts each experience with warmth, creativity, and
             elegance.
-            <br />
-            <br />
+            <br /><br />
             We handle every detail — from vibrant décor and mood lighting to
             catering, music, and seating setups — so you can focus on enjoying
             the celebration with your loved ones.
-            <br />
-            <br />
+            <br /><br />
             Whether it’s a cozy family gathering or a grand outdoor event, we’ll
             make sure it’s one for the memories.
-            <br />
-            <br />
+            <br /><br />
             <span className="italic text-gray-300">
               Because every milestone deserves to shine. 🌸
             </span>
           </p>
         </motion.div>
 
-        {/* 📸 Image Carousel */}
+        {/* IMAGE CAROUSEL */}
         <motion.div
           className="relative rounded-2xl overflow-hidden shadow-2xl border border-white/10"
           initial={{ opacity: 0, y: 40 }}
@@ -111,6 +115,7 @@ const PrivatePartiesSection = () => {
                   <img
                     src={img}
                     loading="lazy"
+                    decoding="async"
                     alt={`Private Party ${i + 1}`}
                     className="w-full h-[420px] object-cover rounded-2xl"
                   />
@@ -121,7 +126,7 @@ const PrivatePartiesSection = () => {
             <div className="w-full h-[420px] bg-gray-800 animate-pulse rounded-2xl" />
           )}
 
-          {/* Enhanced Slick Styling */}
+          {/* SLICK STYLING */}
           <style>
             {`
               .slick-prev, .slick-next {
@@ -133,16 +138,18 @@ const PrivatePartiesSection = () => {
               }
               .slick-prev { left: 15px; }
               .slick-next { right: 15px; }
+
               .slick-prev:before, .slick-next:before {
                 font-size: 36px;
                 opacity: 0.8;
                 color: #ffffff;
                 transition: all 0.3s ease;
               }
-              .slick-prev:hover:before, .slick-next:hover:before {
+
+              .slick-prev:hover:before,
+              .slick-next:hover:before {
                 color: #E7B10A;
                 opacity: 1;
-                text-shadow: 0 0 12px rgba(231, 177, 10, 0.6);
               }
 
               .slick-dots {
@@ -152,16 +159,10 @@ const PrivatePartiesSection = () => {
                 font-size: 12px;
                 color: #ffffff;
                 opacity: 0.5;
-                transition: all 0.3s ease;
               }
               .slick-dots li.slick-active button:before {
                 color: #E7B10A;
                 opacity: 1;
-                text-shadow: 0 0 8px rgba(231, 177, 10, 0.7);
-              }
-              .slick-dots li button:hover:before {
-                color: #E7B10A;
-                opacity: 0.9;
               }
             `}
           </style>

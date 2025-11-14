@@ -13,7 +13,7 @@ function EventSection() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const { ref, inView } = useInView({
     triggerOnce: true,
-    rootMargin: "50px",
+    rootMargin: "100px",
   });
 
   const nextImage = () => {
@@ -27,6 +27,7 @@ function EventSection() {
   return (
     <section className="w-full py-16 px-6 md:px-20 bg-transparent relative z-10">
       <div className="grid md:grid-cols-2 gap-12 items-center">
+        
         {/* Left: Text */}
         <motion.div
           initial={{ x: -100, opacity: 0 }}
@@ -62,6 +63,7 @@ function EventSection() {
               src={images[currentIndex]}
               alt="Luxcity Event"
               loading="lazy"
+              decoding="async"
               className="w-full h-full object-cover transition-all duration-500"
             />
           ) : (

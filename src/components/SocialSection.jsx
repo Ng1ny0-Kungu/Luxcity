@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
-import { useInView } from "react-intersection-observer"; // 👈 for lazy loading
+import { useInView } from "react-intersection-observer";
 
 import charitywalk from "../assets/charitywalk.jpg";
 import charitywalk2 from "../assets/charitywalk2.jpeg";
@@ -25,10 +25,10 @@ function SocialSection() {
   const images = [charitywalk, charitywalk2, communityfun];
   const [currentIndex, setCurrentIndex] = useState(0);
 
-  // Lazy load reference
+  // Lazy load trigger
   const { ref, inView } = useInView({
     triggerOnce: true,
-    rootMargin: "100px",
+    rootMargin: "120px",
   });
 
   // Auto-slide every 4 seconds
@@ -50,7 +50,8 @@ function SocialSection() {
   return (
     <section className="w-full py-20 px-6 md:px-20 bg-transparent relative z-10">
       <div className="grid md:grid-cols-2 gap-12 items-center">
-        {/* Left: Image Slideshow */}
+
+        {/* LEFT — Lazy Loaded Image Slideshow */}
         <motion.div
           ref={ref}
           initial={{ x: -200, opacity: 0 }}
@@ -63,30 +64,32 @@ function SocialSection() {
             <img
               src={images[currentIndex]}
               alt="Luxcity Social Life"
-              loading="lazy"
+              loading="lazy"         // 👈 Native lazy loading
+              decoding="async"        // 👈 Faster decoding
               className="w-full h-full object-cover transition-all duration-700"
             />
           ) : (
-            // Skeleton placeholder shimmer while offscreen
+            // Skeleton shimmer placeholder
             <div className="w-full h-full bg-gray-800 animate-pulse rounded-xl" />
           )}
 
-          {/* Buttons */}
+          {/* Navigation Buttons */}
           <button
             onClick={prevImage}
-            className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-black/50 text-white px-3 py-2 rounded-full hover:bg-black/70"
+            className="absolute left-2 top-1/2 -translate-y-1/2 bg-black/50 text-white px-3 py-2 rounded-full hover:bg-black/70 transition"
           >
             ◀
           </button>
+
           <button
             onClick={nextImage}
-            className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-black/50 text-white px-3 py-2 rounded-full hover:bg-black/70"
+            className="absolute right-2 top-1/2 -translate-y-1/2 bg-black/50 text-white px-3 py-2 rounded-full hover:bg-black/70 transition"
           >
             ▶
           </button>
         </motion.div>
 
-        {/* Right: Text Box */}
+        {/* RIGHT — Text Box */}
         <motion.div
           variants={textContainer}
           initial="hidden"
@@ -112,7 +115,6 @@ function SocialSection() {
             experiences we create — it’s in the lives we uplift.
           </motion.p>
 
-          {/* Explore Button */}
           <motion.div variants={textItem}>
             <Link
               to="/about"

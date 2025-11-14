@@ -16,10 +16,15 @@ import techconvention from "../assets/techconvention.jpg";
 
 const CorporateEventsSection = () => {
   const controls = useAnimation();
-  const { ref, inView } = useInView({ triggerOnce: true, rootMargin: "100px" });
+
+  // 🔥 Lazy load trigger
+  const { ref, inView } = useInView({
+    triggerOnce: true,
+    rootMargin: "120px",
+  });
+
   const [imagesLoaded, setImagesLoaded] = useState(false);
 
-  // Animate text box
   useEffect(() => {
     if (inView) {
       controls.start({
@@ -28,11 +33,11 @@ const CorporateEventsSection = () => {
         transition: { duration: 1.2, ease: "easeOut" },
       });
 
-      // Delay carousel load slightly
-      const timer = setTimeout(() => setImagesLoaded(true), 300);
-      return () => clearTimeout(timer);
+      // Load carousel slightly after the section enters view
+      const t = setTimeout(() => setImagesLoaded(true), 300);
+      return () => clearTimeout(t);
     }
-  }, [controls, inView]);
+  }, [inView, controls]);
 
   const settings = {
     dots: true,
@@ -62,7 +67,8 @@ const CorporateEventsSection = () => {
       className="relative py-20 px-6 md:px-20 bg-transparent text-white overflow-hidden"
     >
       <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
-        {/* ✅ Left: Text Box */}
+
+        {/* LEFT TEXT */}
         <motion.div
           className="bg-white/5 backdrop-blur-md p-8 rounded-2xl shadow-lg border border-white/10"
           initial={{ opacity: 0, y: 40 }}
@@ -71,11 +77,11 @@ const CorporateEventsSection = () => {
           <h2 className="text-3xl md:text-5xl font-bold mb-4 text-[#0492C2]">
             Events That Inspire Excellence
           </h2>
+
           <p className="text-lg leading-relaxed text-gray-200">
             From high-level conferences to exciting product launches — we bring excellence
             to every corporate event.
-            <br />
-            <br />
+            <br /><br />
             Our team ensures every detail is handled with precision:
           </p>
 
@@ -88,24 +94,24 @@ const CorporateEventsSection = () => {
           </ul>
 
           <br />
+
           <p className="text-lg leading-relaxed text-gray-200">
             Whether it’s a start-up showcase or a multinational summit — we make every moment shine.
-            <br />
-            <br />
+            <br /><br />
             <span className="italic text-gray-300">
               Because great ideas deserve an equally great stage. 🌟
             </span>
           </p>
         </motion.div>
 
-        {/* ✅ Right: Lazy Image Carousel */}
+        {/* RIGHT IMAGE CAROUSEL WITH LAZY LOAD */}
         <motion.div
           className="relative rounded-2xl overflow-hidden shadow-2xl border border-white/10"
           initial={{ opacity: 0, y: 40 }}
           animate={{
             opacity: inView ? 1 : 0,
             y: inView ? 0 : 40,
-            transition: { duration: 1.4, delay: 0.4, ease: "easeOut" },
+            transition: { duration: 1.4, delay: 0.4 },
           }}
         >
           {imagesLoaded ? (
@@ -115,6 +121,7 @@ const CorporateEventsSection = () => {
                   <img
                     src={img}
                     loading="lazy"
+                    decoding="async"
                     alt={`Corporate Event ${i + 1}`}
                     className="w-full h-[420px] object-cover rounded-2xl"
                   />
@@ -122,10 +129,11 @@ const CorporateEventsSection = () => {
               ))}
             </Slider>
           ) : (
+            // Skeleton loader
             <div className="w-full h-[420px] bg-gray-800 animate-pulse rounded-2xl" />
           )}
 
-          {/* Enhanced Slick Styling */}
+          {/* ARROWS + DOTS STYLING */}
           <style>
             {`
               .slick-prev, .slick-next {
@@ -137,34 +145,33 @@ const CorporateEventsSection = () => {
               }
               .slick-prev { left: 15px; }
               .slick-next { right: 15px; }
+
               .slick-prev:before, .slick-next:before {
                 font-size: 36px;
                 opacity: 0.8;
                 color: #ffffff;
                 transition: all 0.3s ease;
               }
-              .slick-prev:hover:before, .slick-next:hover:before {
+
+              .slick-prev:hover:before,
+              .slick-next:hover:before {
                 color: #0492C2;
                 opacity: 1;
-                text-shadow: 0 0 12px rgba(4, 146, 194, 0.6);
               }
+
               .slick-dots {
                 bottom: 10px;
               }
+
               .slick-dots li button:before {
                 font-size: 12px;
                 color: #ffffff;
                 opacity: 0.5;
-                transition: all 0.3s ease;
               }
+
               .slick-dots li.slick-active button:before {
                 color: #0492C2;
                 opacity: 1;
-                text-shadow: 0 0 8px rgba(4, 146, 194, 0.7);
-              }
-              .slick-dots li button:hover:before {
-                color: #0492C2;
-                opacity: 0.9;
               }
             `}
           </style>

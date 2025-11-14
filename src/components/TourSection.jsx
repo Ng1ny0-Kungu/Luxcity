@@ -11,9 +11,10 @@ import tour3 from "../assets/tour3.jpg";
 function TourSection() {
   const tourImages = [tour1, tour2, tour3];
   const [tourIndex, setTourIndex] = useState(0);
+
   const { ref, inView } = useInView({
     triggerOnce: true,
-    rootMargin: "50px",
+    rootMargin: "100px",
   });
 
   // Auto carousel
@@ -21,8 +22,9 @@ function TourSection() {
     const interval = setInterval(() => {
       setTourIndex((prev) => (prev + 1) % tourImages.length);
     }, 4000);
+
     return () => clearInterval(interval);
-  }, []);
+  }, [tourImages.length]);
 
   // Counters
   const [countDestinations, setCountDestinations] = useState(0);
@@ -36,14 +38,18 @@ function TourSection() {
       if (startDest < 50) {
         startDest++;
         setCountDestinations(startDest);
-      } else clearInterval(destInterval);
+      } else {
+        clearInterval(destInterval);
+      }
     }, 40);
 
     const satInterval = setInterval(() => {
       if (startSat < 100) {
         startSat++;
         setCountSatisfaction(startSat);
-      } else clearInterval(satInterval);
+      } else {
+        clearInterval(satInterval);
+      }
     }, 20);
 
     return () => {
@@ -55,6 +61,7 @@ function TourSection() {
   return (
     <section className="bg-transparent py-16 relative z-10">
       <div className="max-w-7xl mx-auto px-6 grid md:grid-cols-2 gap-12 items-center">
+        
         {/* Image Container */}
         <motion.div
           ref={ref}
@@ -69,13 +76,14 @@ function TourSection() {
               src={tourImages[tourIndex]}
               alt="Tour"
               loading="lazy"
+              decoding="async"
               className="w-full h-[400px] object-cover transition-all duration-500"
             />
           ) : (
             <div className="w-full h-[400px] bg-gray-800 animate-pulse rounded-2xl" />
           )}
 
-          {/* Manual buttons */}
+          {/* Manual Buttons */}
           <div className="absolute inset-0 flex items-center justify-between p-4">
             <button
               onClick={() =>
@@ -85,6 +93,7 @@ function TourSection() {
             >
               ‹
             </button>
+
             <button
               onClick={() =>
                 setTourIndex((prev) => (prev + 1) % tourImages.length)
@@ -104,12 +113,15 @@ function TourSection() {
           transition={{ duration: 1, ease: "easeOut" }}
           viewport={{ once: true }}
         >
-          <h2 className="text-2xl md:text-3xl font-bold text-[#0492C2]">Our Tours</h2>
+          <h2 className="text-2xl md:text-3xl font-bold text-[#0492C2]">
+            Our Tours
+          </h2>
+
           <p className="mb-6">
             Discover the beauty of Kenya with our curated travel experiences.
             From wildlife safaris to cultural tours, we offer personalized
-            packages to suit every traveler's needs. Let us guide you through
-            unforgettable adventures and create lasting memories.
+            packages for every traveler. Let us guide you to unforgettable
+            adventures and lasting memories.
           </p>
 
           <h3 className="text-[#0492C2] text-xl font-semibold text-center mb-6">
@@ -117,20 +129,20 @@ function TourSection() {
           </h3>
 
           <div className="grid grid-cols-2 gap-8 text-center">
+
             {/* Destinations */}
             <div>
               <h4 className="text-5xl font-bold">{countDestinations}+</h4>
               <p className="text-sm mt-2">
-                Destinations explored with our expertly curated tour packages,
-                ensuring unforgettable experiences.
+                Destinations explored through our expertly curated tours.
               </p>
             </div>
+
             {/* Satisfaction */}
             <div>
               <h4 className="text-5xl font-bold">{countSatisfaction}%</h4>
               <p className="text-sm mt-2">
-                Customer satisfaction rate, reflecting our commitment to
-                providing exceptional travel experiences.
+                Customer satisfaction—our promise of premium travel experiences.
               </p>
             </div>
           </div>

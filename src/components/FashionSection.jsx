@@ -50,6 +50,7 @@ function FashionSection() {
   return (
     <section className="w-full py-20 px-6 md:px-20 bg-transparent relative z-10">
       <div className="grid md:grid-cols-2 gap-12 items-center">
+
         {/* Left: Text Box */}
         <motion.div
           variants={textContainer}
@@ -92,8 +93,8 @@ function FashionSection() {
                 <CountUp start={0} end={1000} duration={3} />+
               </h3>
               <p className="text-sm text-gray-300">
-                Exclusive jewelry pieces sold, each reflecting timeless elegance
-                and superior craftsmanship for our esteemed clientele.
+                Exclusive jewelry pieces sold, each reflecting timeless
+                elegance and superior craftsmanship.
               </p>
             </motion.div>
 
@@ -106,8 +107,8 @@ function FashionSection() {
                 <CountUp start={0} end={100} duration={3} />%
               </h3>
               <p className="text-sm text-gray-300">
-                Increase in customer satisfaction reported after purchasing our
-                luxury fashion items, enhancing their personal style.
+                Customer satisfaction increase after purchasing our luxurious,
+                handcrafted fashion products.
               </p>
             </motion.div>
           </div>
@@ -127,22 +128,24 @@ function FashionSection() {
               src={images[currentIndex]}
               alt="Luxcity Fashion"
               loading="lazy"
+              decoding="async"
               className="w-full h-full object-cover transition-all duration-700"
             />
           ) : (
             <div className="w-full h-full bg-gray-800 animate-pulse rounded-xl" />
           )}
 
-          {/* Buttons */}
+          {/* Navigation Buttons */}
           <button
             onClick={prevImage}
-            className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-black/50 text-white px-3 py-2 rounded-full hover:bg-black/70"
+            className="absolute left-2 top-1/2 -translate-y-1/2 bg-black/50 text-white px-3 py-2 rounded-full hover:bg-black/70"
           >
             ◀
           </button>
+
           <button
             onClick={nextImage}
-            className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-black/50 text-white px-3 py-2 rounded-full hover:bg-black/70"
+            className="absolute right-2 top-1/2 -translate-y-1/2 bg-black/50 text-white px-3 py-2 rounded-full hover:bg-black/70"
           >
             ▶
           </button>

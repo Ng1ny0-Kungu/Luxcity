@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { motion, useAnimation } from "framer-motion";
-import { useInView } from "react-intersection-observer"; // 👈 Added
+import { useInView } from "react-intersection-observer";
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
@@ -11,18 +11,17 @@ import musicVideo from "../assets/Music.mp4";
 
 const MusicAcademySection = () => {
   const controls = useAnimation();
+
+  // Lazy-load trigger
   const { ref, inView } = useInView({
     triggerOnce: true,
-    rootMargin: "100px",
+    rootMargin: "120px",
   });
 
   const videoRef = useRef(null);
-  const [isMuted, setIsMuted] = useState(true);
-  const [volume, setVolume] = useState(0.5);
-  const [currentSlide, setCurrentSlide] = useState(0);
-  const [videoLoaded, setVideoLoaded] = useState(false); // 👈 Lazy load video
+  const [videoLoaded, setVideoLoaded] = useState(false);
 
-  // Animate section when in view
+  // Animation + lazy video loading
   useEffect(() => {
     if (inView) {
       controls.start({
@@ -31,23 +30,13 @@ const MusicAcademySection = () => {
         transition: { duration: 1.2, ease: "easeOut" },
       });
 
-      // Load video only when visible
-      const timer = setTimeout(() => setVideoLoaded(true), 500);
+      // Load video slightly after inView for smoother appearance
+      const timer = setTimeout(() => setVideoLoaded(true), 400);
       return () => clearTimeout(timer);
     }
-  }, [controls, inView]);
+  }, [inView, controls]);
 
-  const handleVolumeChange = (e) => {
-    const vol = parseFloat(e.target.value);
-    setVolume(vol);
-    if (videoRef.current) videoRef.current.volume = vol;
-  };
-
-  const handleMuteToggle = () => {
-    setIsMuted((prev) => !prev);
-    if (videoRef.current) videoRef.current.muted = !videoRef.current.muted;
-  };
-
+  // Slider settings — autoplay only when visible
   const settings = {
     dots: true,
     infinite: true,
@@ -75,7 +64,8 @@ const MusicAcademySection = () => {
       className="relative py-20 px-6 md:px-20 bg-transparent text-white overflow-hidden"
     >
       <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
-        {/* Text Box */}
+        
+        {/* TEXT BOX */}
         <motion.div
           className="bg-white/5 backdrop-blur-md p-8 rounded-2xl shadow-lg border border-white/10"
           initial={{ opacity: 0, y: 40 }}
@@ -88,22 +78,21 @@ const MusicAcademySection = () => {
             Our Music Academy helps you find your rhythm and voice — whether it’s mastering
             instruments, learning vocals, or exploring the world of music production.
             From melody creation to live performance, we guide your journey into sound.
-            <br />
-            <br />
+            <br /><br />
             <span className="italic text-gray-300">
               Speak the language that everyone understands — music.
             </span>
           </p>
         </motion.div>
 
-        {/* Media Carousel */}
+        {/* MEDIA CAROUSEL */}
         <motion.div
           className="relative rounded-2xl overflow-hidden shadow-2xl border border-white/10"
           initial={{ opacity: 0, y: 40 }}
           animate={{
             opacity: inView ? 1 : 0,
             y: inView ? 0 : 40,
-            transition: { duration: 1.4, delay: 0.4, ease: "easeOut" },
+            transition: { duration: 1.3, delay: 0.4 },
           }}
         >
           {inView ? (
@@ -113,28 +102,35 @@ const MusicAcademySection = () => {
                   <img
                     src={img}
                     loading="lazy"
+                    decoding="async"
                     alt={`Music Academy ${i + 1}`}
                     className="w-full h-[420px] object-cover rounded-2xl"
                   />
                 </div>
               ))}
+
+              {/* Lazy loaded video */}
               <div>
-                <video
-                  ref={videoRef}
-                  src={musicVideo}
-                  className="w-full h-[420px] object-cover rounded-2xl"
+                {videoLoaded ? (
+                  <video
+                    ref={videoRef}
+                    src={musicVideo}
+                    className="w-full h-[420px] object-cover rounded-2xl"
                     muted
                     controls
                     playsInline
                   />
+                ) : (
+                  <div className="w-full h-[420px] bg-gray-800 animate-pulse rounded-2xl" />
+                )}
               </div>
             </Slider>
           ) : (
-            // Placeholder for carousel before it's visible
+            // Skeleton before section becomes visible
             <div className="w-full h-[420px] bg-gray-800 animate-pulse rounded-2xl" />
           )}
 
-          {/* Styles for arrows and dots */}
+          {/* STYLES */}
           <style>
             {`
               .slick-prev, .slick-next {
@@ -144,8 +140,10 @@ const MusicAcademySection = () => {
                 top: 50%;
                 transform: translateY(-50%);
               }
+
               .slick-prev { left: 15px; }
               .slick-next { right: 15px; }
+
               .slick-prev:before, .slick-next:before {
                 font-size: 36px;
                 opacity: 0.8;
@@ -158,23 +156,15 @@ const MusicAcademySection = () => {
                 text-shadow: 0 0 12px rgba(4, 146, 194, 0.6);
               }
 
-              .slick-dots {
-                bottom: 10px;
-              }
+              .slick-dots { bottom: 10px; }
               .slick-dots li button:before {
                 font-size: 12px;
                 color: #ffffff;
                 opacity: 0.5;
-                transition: all 0.3s ease;
               }
               .slick-dots li.slick-active button:before {
                 color: #0492C2;
                 opacity: 1;
-                text-shadow: 0 0 8px rgba(4, 146, 194, 0.7);
-              }
-              .slick-dots li button:hover:before {
-                color: #0492C2;
-                opacity: 0.9;
               }
             `}
           </style>

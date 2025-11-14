@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { motion, useAnimation } from "framer-motion";
-import { useInView } from "react-intersection-observer"; // 👈 Added
+import { useInView } from "react-intersection-observer";
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
@@ -11,16 +11,18 @@ import danceVideo from "../assets/Dancevideo.mp4";
 
 const DanceAcademySection = () => {
   const controls = useAnimation();
+
+  // Lazy-load trigger
   const { ref, inView } = useInView({
     triggerOnce: true,
-    rootMargin: "100px",
+    rootMargin: "120px",
   });
 
   const videoRef = useRef(null);
-  const [volume, setVolume] = useState(0);
+  const [videoLoaded, setVideoLoaded] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
   const [isMuted, setIsMuted] = useState(true);
-  const [videoLoaded, setVideoLoaded] = useState(false);
+  const [volume, setVolume] = useState(0);
 
   useEffect(() => {
     if (inView) {
@@ -30,11 +32,11 @@ const DanceAcademySection = () => {
         transition: { duration: 1.2, ease: "easeOut" },
       });
 
-      // Lazy load video when in view
-      const timer = setTimeout(() => setVideoLoaded(true), 400);
-      return () => clearTimeout(timer);
+      // Lazy load video
+      const t = setTimeout(() => setVideoLoaded(true), 400);
+      return () => clearTimeout(t);
     }
-  }, [controls, inView]);
+  }, [inView, controls]);
 
   const settings = {
     dots: true,
@@ -44,7 +46,7 @@ const DanceAcademySection = () => {
     slidesToScroll: 1,
     arrows: true,
     pauseOnHover: true,
-    beforeChange: (_, next) => {
+    beforeChange: () => {
       if (videoRef.current) videoRef.current.pause();
       setIsPlaying(false);
     },
@@ -56,20 +58,10 @@ const DanceAcademySection = () => {
     },
   };
 
-  const handleVolumeChange = (e) => {
-    const newVol = parseFloat(e.target.value);
-    setVolume(newVol);
-    if (videoRef.current) {
-      videoRef.current.volume = newVol;
-      setIsMuted(newVol === 0);
-    }
-  };
-
   const toggleMute = () => {
-    if (videoRef.current) {
-      videoRef.current.muted = !isMuted;
-      setIsMuted(!isMuted);
-    }
+    if (!videoRef.current) return;
+    videoRef.current.muted = !isMuted;
+    setIsMuted(!isMuted);
   };
 
   const togglePlayPause = () => {
@@ -79,13 +71,23 @@ const DanceAcademySection = () => {
     setIsPlaying(!isPlaying);
   };
 
+  const handleVolumeChange = (e) => {
+    const vol = parseFloat(e.target.value);
+    setVolume(vol);
+    if (videoRef.current) {
+      videoRef.current.volume = vol;
+      setIsMuted(vol === 0);
+    }
+  };
+
   return (
     <section
       ref={ref}
       className="relative py-20 px-6 md:px-20 bg-transparent text-white overflow-hidden"
     >
       <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
-        {/* Left: Text Box */}
+
+        {/* TEXT */}
         <motion.div
           className="bg-white/5 backdrop-blur-md p-8 rounded-2xl shadow-lg border border-white/10"
           initial={{ opacity: 0, y: 40 }}
@@ -99,22 +101,21 @@ const DanceAcademySection = () => {
             contemporary and cultural dances, we guide you to express emotion through
             motion. Each step builds confidence, rhythm, and grace — shaping artistry
             in motion.
-            <br />
-            <br />
+            <br /><br />
             <span className="italic text-gray-300">
               Dance is the heartbeat you can see.
             </span>
           </p>
         </motion.div>
 
-        {/* Right: Media Carousel */}
+        {/* SLIDER */}
         <motion.div
           className="relative rounded-2xl overflow-hidden shadow-2xl border border-white/10"
           initial={{ opacity: 0, y: 40 }}
           animate={{
             opacity: inView ? 1 : 0,
             y: inView ? 0 : 40,
-            transition: { duration: 1.4, delay: 0.4, ease: "easeOut" },
+            transition: { duration: 1.4, delay: 0.4 },
           }}
         >
           {inView ? (
@@ -124,28 +125,34 @@ const DanceAcademySection = () => {
                   <img
                     src={img}
                     loading="lazy"
+                    decoding="async"
                     alt={`Dance Academy ${i + 1}`}
                     className="w-full h-[420px] object-cover rounded-2xl"
                   />
                 </div>
               ))}
 
+              {/* Lazy video */}
               <div>
-                <video
-                ref={videoRef}
-                src={danceVideo}
-                className="w-full h-[420px] object-cover rounded-2xl"
-                muted
-                controls
-                playsInline
-                />
+                {videoLoaded ? (
+                  <video
+                    ref={videoRef}
+                    src={danceVideo}
+                    className="w-full h-[420px] object-cover rounded-2xl"
+                    muted={isMuted}
+                    controls
+                    playsInline
+                  />
+                ) : (
+                  <div className="w-full h-[420px] bg-gray-800 animate-pulse rounded-2xl" />
+                )}
               </div>
             </Slider>
           ) : (
             <div className="w-full h-[420px] bg-gray-800 animate-pulse rounded-2xl" />
           )}
 
-          {/* Styles for arrows and dots */}
+          {/* ARROWS + DOTS STYLING */}
           <style>
             {`
               .slick-prev, .slick-next {
@@ -157,6 +164,7 @@ const DanceAcademySection = () => {
               }
               .slick-prev { left: 15px; }
               .slick-next { right: 15px; }
+
               .slick-prev:before, .slick-next:before {
                 font-size: 36px;
                 opacity: 0.8;
@@ -166,7 +174,6 @@ const DanceAcademySection = () => {
               .slick-prev:hover:before, .slick-next:hover:before {
                 color: #0492C2;
                 opacity: 1;
-                text-shadow: 0 0 12px rgba(4, 146, 194, 0.6);
               }
 
               .slick-dots {
@@ -176,12 +183,10 @@ const DanceAcademySection = () => {
                 font-size: 12px;
                 color: #ffffff;
                 opacity: 0.5;
-                transition: all 0.3s ease;
               }
               .slick-dots li.slick-active button:before {
                 color: #0492C2;
                 opacity: 1;
-                text-shadow: 0 0 8px rgba(4, 146, 194, 0.7);
               }
             `}
           </style>
