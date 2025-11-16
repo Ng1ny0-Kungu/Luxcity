@@ -1,4 +1,6 @@
+import SEO from "../components/SEO";
 import React from "react";
+import { Helmet } from "react-helmet";
 import { motion } from "framer-motion";
 import ParticlesBackground from "../components/ParticlesBackground";
 import EventSection from "../components/EventSection";
@@ -7,9 +9,43 @@ import FashionSection from "../components/FashionSection";
 import SocialSection from "../components/SocialSection";
 import Footer from "../components/Footer";
 
+<SEO 
+  title="Luxcity | Talent, Events, Fashion, Travel & Education"
+  description="Luxcity offers talent academy training, events planning, fashion styling, jewelry, modeling, travel experiences, and premium creative services."
+/>
+
+
 function Home() {
   return (
     <div className="relative min-h-screen bg-[#151E3D] text-white">
+
+      {/* 🔥 HOME PAGE SEO */}
+      <Helmet>
+        <title>Luxcity | Premier Events, Talent, Fashion & Travel</title>
+
+        <meta
+          name="description"
+          content="Welcome to Luxcity — Kenya’s hub for premier modeling, event planning, talent development, career courses, luxury fashion, jewelry, and curated travel experiences. Discover unforgettable moments and purposeful impact."
+        />
+
+        <meta
+          name="keywords"
+          content="Luxcity Kenya, modeling agency, Kenya events, fashion jewelry, talent training, travel tours Kenya, entertainment events, Luxcity academy"
+        />
+
+        {/* Open Graph */}
+        <meta property="og:title" content="Luxcity | Premier Talent & Events" />
+        <meta
+          property="og:description"
+          content="Experience modeling, entertainment events, talent booking, fashion, jewelry, and curated travel experiences with Luxcity."
+        />
+        <meta property="og:type" content="website" />
+        <meta property="og:site_name" content="Luxcity" />
+
+        {/* Twitter Card */}
+        <meta name="twitter:card" content="summary_large_image" />
+      </Helmet>
+
       <ParticlesBackground />
 
       {/* Hero Section */}
@@ -35,13 +71,12 @@ function Home() {
         </div>
       </section>
 
-      {}
+      {/* Main Sections */}
       <EventSection />
       <TourSection />
       <FashionSection />
       <SocialSection />
 
-      {}
       <Footer />
     </div>
   );

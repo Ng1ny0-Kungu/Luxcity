@@ -23,7 +23,7 @@ const JoinUsSection = () => {
           <br /><br />
           Message us on our socials <span className="text-xl">👇😊</span> 
           <br />or call{" "}
-          <span className="text-[#04b293] font-semibold">+254 797 090 646</span>.
+          <span className="text-[#04b293] font-semibold">0700 200 507</span>.
         </p>
       </motion.div>
     </section>

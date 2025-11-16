@@ -30,7 +30,7 @@ const JoinUsSection = () => {
           <br />
           or call us directly on{" "}
           <span className="text-[#04b293] font-semibold">
-            +254 797 090 646
+            0700 200 507
           </span>
           .
         </p>

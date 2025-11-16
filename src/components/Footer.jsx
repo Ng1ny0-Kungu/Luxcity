@@ -33,7 +33,7 @@ export default function Footer() {
           <FaTwitter size={22} />
         </a>
         <a
-          href="https://tiktok.com/@yourprofile"
+          href="https://www.tiktok.com/@holyjoe0?is_from_webapp=1&sender_device=pc"
           target="_blank"
           rel="noopener noreferrer"
           className="text-white hover:text-[#69C9D0] transition-colors duration-300"
