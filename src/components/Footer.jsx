@@ -9,7 +9,7 @@ export default function Footer() {
       {/* Social Media Icons */}
       <div className="flex justify-center space-x-6 mb-6">
         <a
-          href="https://facebook.com/yourprofile"
+          href="https://www.facebook.com/profile.php?id=61559795826138"
           target="_blank"
           rel="noopener noreferrer"
           className="text-white hover:text-[#1877F2] transition-colors duration-300"
@@ -17,7 +17,7 @@ export default function Footer() {
           <FaFacebookF size={22} />
         </a>
         <a
-          href="https://instagram.com/yourprofile"
+          href="https://www.instagram.com/jose.khalifa.1044?igsh=YzljYTk1ODg3Zg=="
           target="_blank"
           rel="noopener noreferrer"
           className="text-white hover:text-[#E4405F] transition-colors duration-300"
@@ -25,15 +25,7 @@ export default function Footer() {
           <FaInstagram size={22} />
         </a>
         <a
-          href="https://twitter.com/yourprofile"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-white hover:text-[#1DA1F2] transition-colors duration-300"
-        >
-          <FaTwitter size={22} />
-        </a>
-        <a
-          href="https://www.tiktok.com/@holyjoe0?is_from_webapp=1&sender_device=pc"
+          href="https://vm.tiktok.com/ZMHTQGFMsuY9R-l4DmU/"
           target="_blank"
           rel="noopener noreferrer"
           className="text-white hover:text-[#69C9D0] transition-colors duration-300"
