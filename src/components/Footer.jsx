@@ -33,7 +33,7 @@ export default function Footer() {
           <FaTiktok size={22} />
         </a>
         <a
-          href="https://wa.me/yourwhatsapplink"
+          href="https://wa.me/qr/AQ42OPTQJFUGD1"
           target="_blank"
           rel="noopener noreferrer"
           className="text-white hover:text-[#25D366] transition-colors duration-300"
